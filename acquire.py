@@ -1,18 +1,20 @@
-from genericpath import isfile
-from webbrowser import get
 import numpy as np
 import pandas as pd
 from env import get_db_url
-from os import path
+import os
 
 def get_df_from_sql_cached(query,database,filename=''):
     if filename == '':
         filename = 'data/' + database + '.csv'
-    if path.isfile(filename):
+    if not filename.startswith('data/'):
+        filename = 'data/' + filename
+    if not filename.endswith('.csv'):
+        filename = filename + '.csv'
+    if os.path.isfile(filename):
         return pd.read_csv(filename)
     url = get_db_url(database)
     df = pd.read_sql(query, url)
-    df.to_csv(database + '.csv')
+    df.to_csv(filename)
     return df
 
 def get_titanic_data():
