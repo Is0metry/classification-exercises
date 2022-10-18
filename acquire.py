@@ -17,7 +17,7 @@ def build_dataframe(query,database,filename=''):
         return pd.read_csv(filename)
     url = get_db_url(database)
     df = pd.read_sql(query, url)
-    df.to_csv(filename)
+    df.to_csv(filename,index=False)
     return df
 
 def get_titanic_data():
