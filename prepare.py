@@ -1,7 +1,9 @@
 import pandas as pd
+import numpy as np
 from typing import Union,Tuple
 from acquire import get_iris_data, get_titanic_data, get_telco_data
 from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
 def tvt_split(df:pd.DataFrame,stratify:Union[str,pd.Series] = None,test_split:float = .2,validate_split:int = .3):
     '''This function takes a pandas DataFrame as well as either a string or pd.Series and returns a train, validate and test split of the DataFame'''
     if type(stratify) is str:
@@ -20,9 +22,16 @@ def prep_iris(iris_df):
     return tvt_split(ret_df,'species')
 
 def prep_titanic(titanic_df):
-    ret_df = titanic_df.drop(columns=['embarked','class','deck','age'])
+    ret_df = titanic_df.drop(columns=['embarked','class','deck'])
     dummy_df = pd.get_dummies(ret_df,columns=['sex','embark_town'])
-    return tvt_split(dummy_df,'survived')
+    train,validate,test = tvt_split(dummy_df,'survived')
+    imputer = SimpleImputer(missing_values=np.nan,strategy='mean')
+    imputer = imputer.fit(train[['age']])
+    train['age'] = imputer.transform(train[['age']])
+    validate['age'] = imputer.transform(validate[['age']])
+    test['age'] = imputer.transform(test[['age']])
+    return train,validate,test
+
 
 def clean_rows(row:pd.Series):
     cols_to_clean = ['multiple_lines','online_security','online_backup','device_protection','tech_support','streaming_tv','streaming_movies']
@@ -42,4 +51,4 @@ def get_prepared_titanic()-> Tuple[pd.DataFrame,pd.DataFrame,pd.DataFrame]:
 def get_prepared_telco()-> Tuple[pd.DataFrame,pd.DataFrame,pd.DataFrame]:
     return prep_telco(get_telco_data())
 if __name__ == '__main__':
-    train,validate,test = get_prepared_telco()
+    train,validate,test = get_prepared_titanic()
