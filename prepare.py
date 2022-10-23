@@ -9,6 +9,7 @@ def tvt_split(df:pd.DataFrame,stratify:Union[str,pd.Series] = None,test_split:fl
     else:
         strat = stratify
     train_validate, test = train_test_split(df,test_size=test_split,random_state=123,stratify=strat)
+    strat = train_validate[stratify]
     train, validate = train_test_split(train_validate,test_size=validate_split,random_state=123,stratify=strat)
     return train,validate,test
 def prep_iris(iris_df):
