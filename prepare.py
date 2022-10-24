@@ -21,10 +21,11 @@ def prep_iris(iris_df):
     ret_df = pd.concat([ret_df,dummy_df],axis=1)
     return tvt_split(ret_df,'species')
 
-def prep_titanic(titanic_df):
+def prep_titanic(titanic_df,dummies:bool = True):
     ret_df = titanic_df.drop(columns=['embarked','class','deck'])
-    dummy_df = pd.get_dummies(ret_df,columns=['sex','embark_town'])
-    train,validate,test = tvt_split(dummy_df,'survived')
+    if dummies:
+        ret_df = pd.get_dummies(ret_df,columns=['sex','embark_town'])
+    train,validate,test = tvt_split(ret_df,'survived')
     imputer = SimpleImputer(missing_values=np.nan,strategy='mean')
     imputer = imputer.fit(train[['age']])
     train['age'] = imputer.transform(train[['age']])
@@ -50,5 +51,3 @@ def get_prepared_titanic()-> Tuple[pd.DataFrame,pd.DataFrame,pd.DataFrame]:
     return prep_titanic(get_titanic_data())
 def get_prepared_telco()-> Tuple[pd.DataFrame,pd.DataFrame,pd.DataFrame]:
     return prep_telco(get_telco_data())
-if __name__ == '__main__':
-    train,validate,test = get_prepared_titanic()
