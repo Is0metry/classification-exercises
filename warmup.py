@@ -1,13 +1,8 @@
-COEFFICIENT = (1/2) ** 6
+import seaborn as sns
 
-def get_initial_height(h):
-    return h / COEFFICIENT
-print(get_initial_height(1))
+tips = sns.load_dataset('tips')
 
-def get_height(x,b):
-    if b == 0:
-        return 1
-    else:
-        return get_height(x/2,b-1)
-print(get_height(64,1))
+total_bill_over_two = tips[tips.tip >=2]['total_bill']
+print(total_bill_over_two)
 
+tips = tips
